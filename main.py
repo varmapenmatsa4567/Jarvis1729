@@ -1,18 +1,18 @@
 from telegram.ext import *
 import wikipedia
 import imdb
+import wolframalpha
 
 movies = imdb.IMDb()
+
+wid = "V7WAUA-P9LHUVAXEG"
 
 def start_command(update,context):
     update.message.reply_text("Hello")
 
 def handle_message(update,context):
     text = str(update.message.text).lower()
-    if "calc" in text:
-        val = text.split()[1]
-        res = eval(val)
-    elif "wiki" in text:
+    if "wiki" in text:
         update.message.reply_text("Fetching data...")
         val = text.replace("wiki ","")
         res = wikipedia.summary(val)
@@ -28,6 +28,13 @@ def handle_message(update,context):
         res += "\nRating: "+str(movie["rating"])
         res += "\nDirectors: "+','.join(map(str,movie["directors"]))
         res += "\nCasting: "+','.join(map(str,movie["cast"]))
+    
+    else:
+        update.message.reply_text("Fetching data...")
+        client = wolframalpha.Client(wid)
+        res = client.query(text)
+        res = next(res.results).text
+
     update.message.reply_text(res)
 
 
